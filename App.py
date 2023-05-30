@@ -7,7 +7,7 @@ import numpy as np
 app = Flask(__name__)
 
 model = load_model("kmeans_deployment")
-cols = ["genre", "price_final", "win", "mac", "linux", "positive_ratio"]
+cols = ["genre", "price_final", "win", "mac", "linux", "positive_ratio","app_id"]
 
 @app.route("/")
 def home():
@@ -19,18 +19,33 @@ def predict():
     final = np.array(int_features).reshape(1, -1)
     data_unseen = pd.DataFrame(final, columns = cols)
     prediction = predict_model(model, data=data_unseen)
-    prediction = prediction.iloc[0]
-    
-    return render_template("home.html", pred = "El juegos recomendados es {}".format(prediction))
 
-@app.route("/predict_api", methods = ["POST"])
-def predict_api():
-    data = request.get_json(force = True)
-    data_unseen = pd.DataFrame([data])
-    prediction = predict_model(model, data=data_unseen)
-    output = prediction.iloc[0]
+    genre = prediction["genre"].values[0]
+    price = int(prediction["price_final"].values[0])
+    win = int(prediction["win"].values[0])
+    mac = int(prediction["mac"].values[0])
+    linux = int(prediction["linux"].values[0])
+
+    values = searchGames(genre, price, win, mac, linux)
+    arr = values["title"]
+
+    if(arr.size > 0):
+        return render_template("home.html", pred = "Los juegos recomendados son {}".format(", ".join(arr)))
     
-    return jsonify(output)
+    else:
+        return render_template("home.html", pred = "Lo sentimos, no se pueden recomendar juegos con esas caracterísitcas :(")
+
+
+def searchGames(genre, price, win, mac, linux):
+
+    df = pd.read_csv("dataframe.csv")
+
+    results = df.loc[(df['genre'] == genre) & (df['price_final'] >= price - 10000) & (df['price_final'] <= price + 10000)
+                     & (df['win'] == win) & (df['mac'] == mac) & (df['linux'] == linux)].head(5)
+
+    games = pd.DataFrame(results) 
+
+    return games
 
 if __name__ == "__main__":
     app.run(debug=True)

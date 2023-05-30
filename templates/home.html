@@ -14,17 +14,18 @@
 
 <body>
   <div class="login">
-    <h1>Recomendador de videojuegos</h1>
+    <h1>Recomendador de videojuegos de Steam</h1>
 
     <!-- Form to enter new data for predictions  -->
     <form action="{{ url_for('predict')}}" method="POST">
       <input type="text" name="genre" placeholder="Género del juego" required="required" /><br>
-      <input type="text" name="price_final" placeholder="Precio del juego" required="required" /><br>
-      <input type="text" name="win" placeholder="Windows" required="required" /><br>
-      <input type="text" name="mac" placeholder="Mac" required="required" /><br>
-      <input type="text" name="linux" placeholder="Linux" required="required" /><br>
+      <input type="number" name="price_final" placeholder="Precio del juego" required="required" /><br>
+      <input type="number" name="win" placeholder="Windows" required="required" /><br>
+      <input type="number" name="mac" placeholder="Mac" required="required" /><br>
+      <input type="number" name="linux" placeholder="Linux" required="required" /><br>
       <input type="hidden" name="positive_ratio" placeholder="positive_ratio" value="1"/><br>
-      
+      <input type="hidden" name="app_id" placeholder="app_id" value="1"/><br>
+
       <button type="submit" class="btn btn-primary btn-block btn-large">Recomendar</button>
     </form>
 
